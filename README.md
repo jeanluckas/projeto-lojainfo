@@ -1,1 +1,1 @@
-Primeira versão do Projeto de uma Loja de Informática
+Projetinho de uma aplicação em uma loja de informática, gerencia clientes, produtos, vendas.
