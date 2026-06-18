@@ -1,0 +1,59 @@
+CREATE TABLE categoria (
+codcategoria SERIAL NOT NULL,
+nome VARCHAR(50) NOT NULL,
+desccategoria VARCHAR(50) NOT NULL,
+CONSTRAINT PK_categoria PRIMARY KEY(codcategoria));
+
+CREATE TABLE produto (
+codproduto SERIAL NOT NULL,
+nomeproduto VARCHAR(100) NOT NULL,
+preco DECIMAL(10,2) NOT NULL DEFAULT 0,
+estoque INT NOT NULL DEFAULT 0,
+codcategoria INT NOT NULL,
+CONSTRAINT PK_produto PRIMARY KEY(codproduto),
+CONSTRAINT FK_produto_categoria FOREIGN KEY(codcategoria) REFERENCES categoria(codcategoria),
+CONSTRAINT CHK_preco CHECK(preco >= 0),
+CONSTRAINT CHK_estoque CHECK(estoque >= 0));
+
+CREATE TABLE cliente (
+codcliente SERIAL NOT NULL,
+nomecliente VARCHAR(255) NOT NULL,
+telefone CHAR(11) NOT NULL DEFAULT NULL,
+email VARCHAR(100) DEFAULT NULL,
+cpf CHAR(11) NOT NULL DEFAULT NULL,
+endereco VARCHAR(255) NOT NULL,
+datanasc DATE NOT NULL,
+CONSTRAINT PK_cliente PRIMARY KEY(codcliente),
+CONSTRAINT CHK_datanasc CHECK(datanasc <= CURRENT_DATE
+AND datanasc > '01/01/1900'));
+
+CREATE TABLE venda (
+codvenda SERIAL NOT NULL,
+codcliente INT NOT NULL,
+datavenda DATE NOT NULL DEFAULT CURRENT_DATE,
+totalvalor DECIMAL(10,2) NOT NULL DEFAULT 0,
+tipopagamento VARCHAR(50) NOT NULL,
+statusvenda VARCHAR(50) NOT NULL,
+CONSTRAINT PK_venda PRIMARY KEY(codvenda),
+CONSTRAINT FK_venda_cliente FOREIGN KEY(codcliente) REFERENCES cliente(codcliente),
+CONSTRAINT CHK_totalvalor CHECK(totalvalor >= 0),
+CONSTRAINT CHK_statusvenda CHECK(statusvenda IN ('ABERTO', 'APROVADO', 'FINALIZADO')));
+
+CREATE TABLE produtovenda (
+codprodutovenda SERIAL NOT NULL,
+codvenda INT NOT NULL,
+codproduto INT NOT NULL,
+quantidade INT NOT NULL,
+CONSTRAINT PK_produtovenda PRIMARY KEY(codprodutovenda),
+CONSTRAINT FK_produtovenda_venda FOREIGN KEY(codvenda) REFERENCES venda(codvenda),
+CONSTRAINT FK_produtovenda_produto FOREIGN KEY(codproduto) REFERENCES produto(codproduto),
+CONSTRAINT UN_produtovenda_codvendaprod UNIQUE (codvenda, codproduto),
+CONSTRAINT CHK_quantidade CHECK(quantidade > 0));
+
+CREATE TABLE usuario (
+codusuario SERIAL NOT NULL,
+usuario VARCHAR(255) NOT NULL,
+senha VARCHAR(255) NOT NULL,
+CONSTRAINT PK_codusuario PRIMARY KEY(codusuario));
+
+INSERT INTO usuario VALUES (default, 'admin', md5('admin'));
